@@ -1,6 +1,7 @@
 import React from 'react'
 import { StyleSheet, Text, View, TouchableOpacity } from 'react-native'
 import enhancer from './components/appLogic'
+import numeral from 'numeral'
 
 const App = props => (
   <View style={styles.container}>
@@ -46,7 +47,9 @@ const App = props => (
         )}
       {props.status === 'running' && (
         <View style={styles.footerArea}>
-          <Text>Time left: {props.time}</Text>
+          {!props.hideTime && (
+            <Text>Time left: {numeral(props.time / 1000).format('0.00')}</Text>
+          )}
         </View>
       )}
       {props.status === 'showResult' && (

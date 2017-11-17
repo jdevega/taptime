@@ -7,7 +7,7 @@ import {
   compose
 } from 'recompose'
 const TimerMixin = require('react-timer-mixin')
-const TIME_INTERVAL = 10
+const TIME_INTERVAL = 200
 
 const enhancer = compose(
   setStatic('mixins', [TimerMixin]),
@@ -20,7 +20,8 @@ const enhancer = compose(
       time: 0,
       timeId: null,
       status: 'stopped',
-      message: null
+      message: null,
+      hideTime: false
     }),
     {
       incPlayerCounter: state => player => ({
@@ -36,6 +37,8 @@ const enhancer = compose(
       setTime: state => time => ({ ...state, time }),
       setTimeId: state => timeId => ({ ...state, timeId }),
       setMessage: state => message => ({ ...state, message }),
+      setHideTime: state => () => ({ ...state, hideTime: true }),
+      setShowTime: state => () => ({ ...state, hideTime: false }),
       setPlayerCounter: state => (player, counter) => ({
         ...state,
         [`${player}Counter`]: counter
@@ -98,16 +101,19 @@ const enhancer = compose(
     onStartClick: props => () => {
       return Promise.resolve()
         .then(() => {
-          const time = Math.floor(Math.random() * 2 + 2) * 1000
+          const time = Math.floor(Math.random() * 5 + 5) * 1000
           props.setTime(time)
+          props.setShowTime()
           props.setStatus('running')
           return time
         })
         .then(time => {
+          const hideTimeAt = time * 0.6
+          const timeHidden = false
           const timeId = this.setInterval(function() {
             time -= TIME_INTERVAL
             props.setTime(time)
-            debugger
+            if (!timeHidden && time < hideTimeAt) props.setHideTime()
             if (time <= 0) {
               this.clearInterval(timeId)
               props.checkResult()
